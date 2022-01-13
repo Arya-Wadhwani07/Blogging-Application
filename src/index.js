@@ -1,11 +1,44 @@
-import {GraphQLServer} from 'graphql-yoga'
+import { GraphQLServer } from 'graphql-yoga'
+
+const users = [{
+    id: '1',
+    name: 'Arya',
+    email: 'arya@example.com',
+    age: 19
+}, {
+    id: '2',
+    name: 'Andrew',
+    email: 'andrew@example.com',
+    age: 27
+}, {
+    id: '3',
+    name: 'Sarah',
+    email: 'sarah@example.com'
+}]
+
+const posts = [{
+    id: '1',
+    title: 'Course1',
+    body: 'This is course 1',
+    published: false
+}, {
+    id: '2',
+    title: 'Course2',
+    body: 'This is course 2',
+    published: true
+}, {
+    id: '3',
+    title: 'Course3',
+    body: 'This is course 3',
+    published: false
+}]
 
 const typeDefs = `
     type Query {
-        greeting(name: String, position: Int): String!
-        add(a: Float!, b: Float!): String!
+        users(query: String): [User!]!
         me: User!
         post: Post!
+        posts(query: String): [Post!]!
     }
     
     type User {
@@ -25,28 +58,39 @@ const typeDefs = `
 
 const resolvers = {
     Query: {
-        greeting(parent, args, ctx, info){
-            if(args.name && args.position){
-                return `Hello ${args.name}. You are my favourite ${args.position}`
+        users(parent, args, ctx, info) {
+            if (!(args.query)) {
+                return users
             }
-            return `Hello!`
+
+            return users.filter((user) => {
+                return user.name.toLowerCase().includes(args.query.toLowerCase())
+            })
         },
-        add(parent,args,ctx,info){
-            const sum = args.a+args.b
-            return `The sum of ${args.a}+${args.b} = ${sum}`
+        posts(parent, args, ctx, info) {
+            if (!(args.query)) {
+                return posts
+            }
+
+            return posts.filter((post) => {
+                if (post.title.toLowerCase().includes(args.query.toLowerCase()) || post.body.toLowerCase().includes(args.query.toLowerCase())) {
+                    return true
+                }
+                return false
+            })
         },
-        me(){
+        me() {
             return {
-                id:'abcd1234',
+                id: 'abcd1234',
                 name: 'Mike Hannigan',
-                email:'mike@example.com',
-                age:27
+                email: 'mike@example.com',
+                age: 27
             }
         },
-        post(){
+        post() {
             return {
-                id:'abcdef123456',
-                title:'The Subtle Art of Greatness',
+                id: 'abcdef123456',
+                title: 'The Subtle Art of Greatness',
                 body: 'I am the killer who is born to be great',
                 published: false
             }
@@ -59,6 +103,6 @@ const server = new GraphQLServer({
     resolvers
 })
 
-server.start(()=>{
+server.start(() => {
     console.log('The server is up!')
 })
