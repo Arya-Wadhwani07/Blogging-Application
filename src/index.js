@@ -4,12 +4,12 @@ const users = [{
     id: '1',
     name: 'Arya',
     email: 'arya@example.com',
-    age: 19
+    age: 19,
 }, {
     id: '2',
     name: 'Andrew',
     email: 'andrew@example.com',
-    age: 27
+    age: 27,
 }, {
     id: '3',
     name: 'Sarah',
@@ -20,17 +20,20 @@ const posts = [{
     id: '1',
     title: 'Course1',
     body: 'This is course 1',
-    published: false
+    published: false,
+    author:'1'
 }, {
     id: '2',
     title: 'Course2',
     body: 'This is course 2',
-    published: true
+    published: true,
+    author:'1'
 }, {
     id: '3',
     title: 'Course3',
     body: 'This is course 3',
-    published: false
+    published: false,
+    author:'2'
 }]
 
 const typeDefs = `
@@ -46,6 +49,7 @@ const typeDefs = `
         name: String!,
         email: String!,
         age: Int
+        posts: [Post!]!
     }
 
     type Post {
@@ -53,6 +57,7 @@ const typeDefs = `
         title: String!,
         body: String!,
         published: Boolean!
+        author: User!
     }
 `
 
@@ -94,6 +99,20 @@ const resolvers = {
                 body: 'I am the killer who is born to be great',
                 published: false
             }
+        }
+    },
+    Post: {
+        author(parent, args, ctx, info){
+            return users.find((user)=>{
+                return user.id == parent.author
+            })
+        }
+    },
+    User:{
+        posts(parent,args,ctx,info){
+            return posts.filter((post)=>{
+                return post.author == parent.id
+            })
         }
     }
 }
