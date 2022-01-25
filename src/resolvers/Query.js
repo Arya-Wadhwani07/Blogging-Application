@@ -1,9 +1,9 @@
 const Query = {
     users(parent, args, { db }, info) {
         if (!(args.query)) {
+            console.log(db)
             return db.users
         }
-
         return db.users.filter((user) => {
             return user.name.toLowerCase().includes(args.query.toLowerCase())
         })
@@ -12,7 +12,7 @@ const Query = {
         if (!(args.query)) {
             return db.posts
         }
-
+        
         return db.posts.filter((post) => {
             if (post.title.toLowerCase().includes(args.query.toLowerCase()) || post.body.toLowerCase().includes(args.query.toLowerCase())) {
                 return true
